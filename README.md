@@ -51,7 +51,7 @@
 
 The delivered application is a full player-management system that combines **user authentication**, **persistent game saves**, a **hint engine**, a **transparent, formula-driven scoring model**, a **Top-10 leaderboard**, and **per-user statistics tracking**, all rendered through a hand-drawn ASCII console interface.
 
-📄 The full academic project proposal (needs analysis, existing-system comparison, development model, feasibility, and budget) is available in this repository — see [`docs/Sudoku_Master_Pro_Proposal.docx`](docs/Sudoku_Master_Pro_Proposal.docx).
+📄 The full academic project proposal (needs analysis, existing-system comparison, development model, feasibility, and budget) is available in this repository — see [`docs/Sudoku_Master_Pro_Proposal.docx`](docs/Sudoku_Master_Pro_Proposal.pdf).
 
 Based on the source code actually implemented:
 
