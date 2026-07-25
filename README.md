@@ -10,12 +10,10 @@
 ![GCC](https://img.shields.io/badge/Compiler-GCC%2FMinGW-A42E2B?style=for-the-badge&logo=gnu&logoColor=white)
 ![Console App](https://img.shields.io/badge/Type-Console%20Application-333333?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/your-username/sudoku-master-pro?style=for-the-badge)
-![Forks](https://img.shields.io/github/forks/your-username/sudoku-master-pro?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/your-username/sudoku-master-pro?style=for-the-badge)
-![Last Commit](https://img.shields.io/github/last-commit/your-username/sudoku-master-pro?style=for-the-badge)
-
-> ⚠️ Replace `your-username/sudoku-master-pro` in the badge URLs above with your real GitHub `owner/repo` path once you push — otherwise these will render as broken/zero.
+![Stars](https://img.shields.io/github/stars/OalidKhan/Sudoku-Master-Pro?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/OalidKhan/Sudoku-Master-Pro?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/OalidKhan/Sudoku-Master-Pro?style=for-the-badge)
+![Last Commit](https://img.shields.io/github/last-commit/OalidKhan/Sudoku-Master-Pro?style=for-the-badge)
 
 </div>
 
