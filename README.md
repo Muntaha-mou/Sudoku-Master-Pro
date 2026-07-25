@@ -15,6 +15,8 @@
 ![Issues](https://img.shields.io/github/issues/your-username/sudoku-master-pro?style=for-the-badge)
 ![Last Commit](https://img.shields.io/github/last-commit/your-username/sudoku-master-pro?style=for-the-badge)
 
+> ⚠️ Replace `your-username/sudoku-master-pro` in the badge URLs above with your real GitHub `owner/repo` path once you push — otherwise these will render as broken/zero.
+
 </div>
 
 ---
@@ -34,6 +36,7 @@
 - [Installation](#-installation)
 - [Controls](#-controls)
 - [File Handling](#-file-handling)
+- [Proposal vs. Implementation](#-proposal-vs-implementation)
 - [Future Improvements](#-future-improvements)
 - [Learning Outcomes](#-learning-outcomes)
 - [Limitations](#-limitations)
@@ -49,6 +52,8 @@
 **Sudoku Master Pro** is a single-file, console-based Sudoku application built in ANSI C as a Software Development Project (SDP) for the Department of Computer Science and Engineering, **BUBT**. It was proposed to fill a specific gap: most Sudoku applications are mobile-only, GUI-heavy, or require internet connectivity, leaving no lightweight, offline, multi-user reference implementation that demonstrates core C concepts — file handling, recursion, backtracking, and modular programming — in one cohesive project.
 
 The delivered application is a full player-management system that combines **user authentication**, **persistent game saves**, a **hint engine**, a **transparent, formula-driven scoring model**, a **Top-10 leaderboard**, and **per-user statistics tracking**, all rendered through a hand-drawn ASCII console interface.
+
+📄 The full academic project proposal (needs analysis, existing-system comparison, development model, feasibility, and budget) is available in this repository — see [`docs/Sudoku_Master_Pro_Proposal.docx`](docs/Sudoku_Master_Pro_Proposal.docx).
 
 Based on the source code actually implemented:
 
@@ -125,61 +130,68 @@ Developed by a team of three CSE students at **BUBT** as their Software Developm
 
 ## 🖼️ Screenshots
 
-> _Screenshots to be added._
+> Captured directly from the compiled `SudukuMasterPro.c` binary running in a terminal.
 
-| Screen | Preview |
+| Welcome Screen | Sign Up | Sign In |
+|---|---|---|
+| ![Welcome Screen](screenshots/welcome_screen.png) | ![Sign Up](screenshots/sign_up.png) | ![Sign In](screenshots/sign_in.png) |
+
+| Main Menu | Gameplay |
 |---|---|
-| Welcome Screen | `screenshot placeholder` |
-| Sign In | `screenshot placeholder` |
-| Sign Up | `screenshot placeholder` |
-| Main Menu | `screenshot placeholder` |
-| Gameplay | `screenshot placeholder` |
-| Leaderboard | `screenshot placeholder` |
-| Statistics | `screenshot placeholder` |
-| Tutorial | `screenshot placeholder` |
+| ![Main Menu](screenshots/main_menu.png) | ![Gameplay](screenshots/gameplay.png) |
+
+| Leaderboard | Statistics |
+|---|---|
+| ![Leaderboard](screenshots/leaderboard.png) | ![Statistics](screenshots/statistics.png) |
+
+| Tutorial |
+|---|
+| ![Tutorial](screenshots/tutorial.png) |
+
+> The Leaderboard and Statistics screens above show a freshly registered account's empty state (no games completed yet) — an accurate first-run view rather than staged data.
 
 ---
 
 ## 🏗️ Project Architecture
 
 ```
-                ┌────────────────────────┐
+                ┌───────────────────────┐
                 │   Load Persistent Data │
                 │  (users/saves/scores/  │
-                │       statistics)      │
+                │       statistics)       │
                 └───────────┬────────────┘
                             ↓
-                ┌────────────────────────┐
+                ┌───────────────────────┐
                 │   Authentication Menu  │
                 │   (Sign In / Sign Up)  │
                 └───────────┬────────────┘
                             ↓
-                ┌────────────────────────┐
+                ┌───────────────────────┐
                 │        Main Menu       │
                 └───────────┬────────────┘
                             ↓
         ┌───────────────────┼─────────────────────┐
-        ↓                   ↓                     ↓
+        ↓                   ↓                      ↓
 ┌───────────────┐  ┌────────────────┐   ┌────────────────────┐
-│   New Game    │  │ Continue Game  │   │ High Scores /      │
-│ (pick puzzle) │  │ (load a slot)  │   │ Statistics/Tutorial│
-└───────┬───────┘  └───────┬────────┘   └─────────┬──────────┘
-        └───────────┬──────┘                      │
-                    ↓                             │
-            ┌─────────────────┐                   │
-            │    Gameplay     │←──────────────────┘
-            │ (enter numbers, │
-            │  hints, save)   │
-            └────────┬────────┘
-                     ↓
-            ┌──────────────────┐
+│   New Game     │  │ Continue Game  │   │  High Scores /      │
+│ (pick puzzle)  │  │ (load a slot)  │   │  Statistics/Tutorial│
+└───────┬────────┘  └───────┬────────┘   └──────────┬──────────┘
+        └───────────┬───────┘                        │
+                     ↓                                │
+            ┌─────────────────┐                       │
+            │     Gameplay     │←──────────────────────┘
+            │ (enter numbers,  │
+            │  hints, save)    │
+            └────────┬─────────┘
+                      ↓
+            ┌─────────────────┐
             │ Score Calculation│
             └────────┬─────────┘
-                     ↓
-        ┌──────────────────────────────┐
+                      ↓
+        ┌─────────────────────────────┐
         │  Leaderboard & Statistics    │
         │        Update + Save         │
-        └──────────────────────────────┘
+        └─────────────────────────────┘
 ```
 
 ---
@@ -189,11 +201,14 @@ Developed by a team of three CSE students at **BUBT** as their Software Developm
 ```
 Sudoku-Master-Pro/
 │
-├── main.c              # Complete source (auth, gameplay, solver, scoring, stats)
-├── users.dat            # Generated at runtime — user accounts
-├── saves.dat            # Generated at runtime — up to 5 save-game slots
-├── highscores.dat        # Generated at runtime — Top 10 high scores
-├── statistics.dat        # Generated at runtime — per-user statistics
+├── SudukuMasterPro.c    # Complete source (auth, gameplay, solver, scoring, stats)
+├── users.dat             # Generated at runtime — user accounts
+├── saves.dat             # Generated at runtime — up to 5 save-game slots
+├── highscores.dat         # Generated at runtime — Top 10 high scores
+├── statistics.dat         # Generated at runtime — per-user statistics
+├── docs/
+│   └── Sudoku_Master_Pro_Proposal.docx   # Official project proposal
+├── screenshots/           # README screenshots
 ├── README.md
 ├── LICENSE
 └── .gitignore
@@ -312,19 +327,19 @@ On every game (win or quit), increments `gamesPlayed` and adds hints used to `to
 
 ### For Windows (MinGW)
 ```bash
-gcc main.c -o sudoku.exe
+gcc SudukuMasterPro.c -o sudoku.exe
 sudoku.exe
 ```
 
 ### For Linux
 ```bash
-gcc main.c -o sudoku
+gcc SudukuMasterPro.c -o sudoku
 ./sudoku
 ```
 
 ### Compilation Command
 ```bash
-gcc main.c -o sudoku
+gcc SudukuMasterPro.c -o sudoku
 ```
 
 ### Running Command
@@ -376,6 +391,23 @@ All persistence uses raw binary `fread`/`fwrite` of fixed-size struct arrays —
 | **`statistics.dat`** | Stores an array of up to 50 `Statistics` records — one per registered user |
 
 Each file is loaded once at startup (`loadAllData`) and rewritten (`saveAllData`) after logout, on exit, and after key events such as completing or quitting a game.
+
+---
+
+## 📋 Proposal vs. Implementation
+
+The project proposal was written before implementation began, so a few proposal statements describe intent rather than the final `SudukuMasterPro.c`. For transparency:
+
+| Proposal Statement | Status in Actual Code |
+|---|---|
+| Backtracking solver used for "solution generation, hint reveals, **and optional auto-solve**" | ✅ Solution generation and hints are implemented. ⚠️ **No auto-solve feature exists** — there is no menu option that lets the solver fill the board automatically for the player. |
+| "Save/load system supporting up to 5 save slots **per session**" | ⚠️ The 5 slots are **global to the binary** (shared across all registered users), not 5 slots per individual user — ownership is checked by username string match against a shared `saves.dat` array. |
+| "Deliver... a calibrated hint budget (5 / 3 / 1 hints respectively)" | ✅ Matches exactly — confirmed in `newGame()`. |
+| "Transparent, formula-driven scoring system combining base score, wrong-move penalties, hint penalties, time penalties, and completion/no-hint bonuses" | ✅ Fully matches `calculateScore()`. |
+| "Top-10 global high-score leaderboard and per-user statistics" | ✅ Fully matches `updateLeaderboard()` / `updateStatistics()`. |
+| "Well-commented, modular codebase (1300+ lines)" | ✅ The submitted source is a single well-commented file organized into clearly separated modules (auth, gameplay, solver, persistence, scoring, stats, UI). |
+
+Everything else in this README (Features, Algorithms, Data Structures, Game Flow, Limitations) is drawn directly from the actual source code, not the proposal.
 
 ---
 
