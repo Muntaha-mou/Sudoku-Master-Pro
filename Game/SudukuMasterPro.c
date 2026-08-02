@@ -343,6 +343,9 @@ void clearScreen(void);
 void pressEnter(void);
 void printSeparator(int width);
 void printCentered(const char *text, int width);
+void printBoxBorder(int width);
+void printBoxLine(const char *text, int width);
+void printBoxLineCentered(const char *text, int width);
 long elapsedSeconds(void);
 const char *diffName(int diff);
 int  findUser(const char *username);
@@ -456,6 +459,39 @@ void printCentered(const char *text, int width) {
     printf("%s\n", text);
 }
 
+/* Draws a box border whose dash count always matches printBoxLine's
+ * content width, so borders and content never drift out of alignment. */
+void printBoxBorder(int width) {
+    printf("  +");
+    for (int i = 0; i < width + 2; i++) printf("-");
+    printf("+\n");
+}
+
+/* Prints one left-aligned content row inside a box of the given
+ * content width. Text longer than width is simply not padded
+ * further (it will push the closing '|' right), so callers should
+ * keep content within `width` characters. */
+void printBoxLine(const char *text, int width) {
+    printf("  | %-*s |\n", width, text);
+}
+
+/* Prints one centered content row, using the same total inner span
+ * (width + 2) as printBoxBorder/printBoxLine so the box stays aligned. */
+void printBoxLineCentered(const char *text, int width) {
+    int inner = width + 2;
+    int len   = (int)strlen(text);
+    int left  = (inner - len) / 2;
+    if (left < 0) left = 0;
+    int right = inner - len - left;
+    if (right < 0) right = 0;
+
+    printf("  |");
+    for (int i = 0; i < left;  i++) printf(" ");
+    printf("%s", text);
+    for (int i = 0; i < right; i++) printf(" ");
+    printf("|\n");
+}
+
 const char *diffName(int diff) {
     if (diff == DIFF_EASY)   return "Easy";
     if (diff == DIFF_MEDIUM) return "Medium";
@@ -525,7 +561,7 @@ void authMenu(void) {
         switch (choice) {
             case 1: signIn();  break;
             case 2: signUp();  break;
-            case 3: printf("\n  Goodbye!\n\n"); saveAllData(); exit(0);
+            case 3: printf("\n  Thank you for playing Sudoku Master Pro!\n\n"); saveAllData(); exit(0);
             default: printf("\n  [!] Invalid choice.\n"); pressEnter();
         }
     } while (!g_loggedIn);
@@ -559,7 +595,7 @@ void mainMenu(void) {
             case 6: logout(); return;
             case 7:
                 saveAllData();
-                printf("\n  Goodbye!\n\n");
+                printf("\n  Thank you for playing Sudoku Master Pro!\n\n");
                 exit(0);
             default:
                 printf("\n  [!] Invalid option.\n");
@@ -706,7 +742,7 @@ int isValidMove(int board[BOARD_SIZE][BOARD_SIZE], int row, int col, int num) {
     return 1;
 }
 
-/* Backtracking solver — returns 1 if solved, 0 if unsolvable */
+/* Backtracking solver � returns 1 if solved, 0 if unsolvable */
 int solveSudoku(int board[BOARD_SIZE][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
@@ -816,8 +852,19 @@ void newGame(void) {
     printf("\n  Choice: ");
 
     int choice;
-    if (scanf("%d", &choice) != 1) { while(getchar()!='\n'); return; }
-    if (choice < 1 || choice > 3) return;
+    if (scanf("%d", &choice) != 1) {
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF) { }
+        printf("\n  [!] Invalid choice.\n");
+        pressEnter();
+        return;
+    }
+    if (choice == 4) return;              /* Back to main menu, no message */
+    if (choice < 1 || choice > 3) {
+        printf("\n  [!] Invalid choice.\n");
+        pressEnter();
+        return;
+    }
 
     /* Initialise game struct */
     memset(&g_currentGame, 0, sizeof(Game));
@@ -846,26 +893,31 @@ void newGame(void) {
 }
 
 void continueGame(void) {
+    const int boxWidth = 38;
+    char line[64];
+
     printBannerASCII();
-    printf("  +-----------------------------+\n");
-    printf("  |       SAVED GAME SLOTS      |\n");
-    printf("  +-----------------------------+\n");
+    printBoxBorder(boxWidth);
+    printBoxLineCentered("SAVED GAME SLOTS", boxWidth);
+    printBoxBorder(boxWidth);
 
     int found = 0;
     for (int i = 0; i < MAX_SAVES; i++) {
         if (g_saves[i].active &&
             strcmp(g_saves[i].username, g_currentUser) == 0)
         {
-            printf("  |  Slot %d: %-8s  Score:%-5d  Hints:%-2d |\n",
-                   i + 1, diffName(g_saves[i].difficulty),
-                   g_saves[i].score, g_saves[i].hintsLeft);
+            snprintf(line, sizeof(line), "Slot %d: %-8s Score:%-5d Hints:%-2d",
+                     i + 1, diffName(g_saves[i].difficulty),
+                     g_saves[i].score, g_saves[i].hintsLeft);
             found = 1;
         } else {
-            printf("  |  Slot %d: [Empty]                      |\n", i + 1);
+            snprintf(line, sizeof(line), "Slot %d: [Empty]", i + 1);
         }
+        printBoxLine(line, boxWidth);
     }
-    printf("  |  %d. Back                          |\n", MAX_SAVES + 1);
-    printf("  +-----------------------------+\n");
+    snprintf(line, sizeof(line), "%d. Back", MAX_SAVES + 1);
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
 
     if (!found) {
         printf("\n  No saved games found for your account.\n");
@@ -892,18 +944,22 @@ void continueGame(void) {
 }
 
 void saveGame(void) {
+    const int boxWidth = 38;
+    char line[64];
+
     printBannerASCII();
-    printf("  +-----------------------------+\n");
-    printf("  |         SAVE GAME           |\n");
-    printf("  +-----------------------------+\n");
+    printBoxBorder(boxWidth);
+    printBoxLineCentered("SAVE GAME", boxWidth);
+    printBoxBorder(boxWidth);
     for (int i = 0; i < MAX_SAVES; i++) {
         if (g_saves[i].active && strcmp(g_saves[i].username, g_currentUser) == 0)
-            printf("  |  Slot %d: %-8s (overwrite)        |\n",
-                   i + 1, diffName(g_saves[i].difficulty));
+            snprintf(line, sizeof(line), "Slot %d: %-8s (overwrite)",
+                     i + 1, diffName(g_saves[i].difficulty));
         else
-            printf("  |  Slot %d: [Empty]                      |\n", i + 1);
+            snprintf(line, sizeof(line), "Slot %d: [Empty]", i + 1);
+        printBoxLine(line, boxWidth);
     }
-    printf("  +-----------------------------+\n");
+    printBoxBorder(boxWidth);
     printf("\n  Choose slot (1-%d): ", MAX_SAVES);
 
     int slot;
@@ -1123,12 +1179,17 @@ void updateLeaderboard(int score, long timeTaken, int diff) {
 }
 
 void showHighScores(void) {
+    const int boxWidth = 44;
+    char line[80];
+
     printBannerASCII();
-    printf("  +-------------------------------------------+\n");
-    printf("  |              TOP 10 HIGH SCORES           |\n");
-    printf("  +-------------------------------------------+\n");
-    printf("  | Rank  Username         Diff    Score  Time |\n");
-    printf("  +-------------------------------------------------+\n");
+    printBoxBorder(boxWidth);
+    printBoxLineCentered("TOP 10 HIGH SCORES", boxWidth);
+    printBoxBorder(boxWidth);
+    snprintf(line, sizeof(line), "%-4s %-14.14s %-6.6s %-6s %-5s",
+             "Rank", "Username", "Diff", "Score", "Time");
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
 
     /* Selection sort (descending score) into temp array */
     Score temp[MAX_HIGHSCORES];
@@ -1151,19 +1212,17 @@ void showHighScores(void) {
     for (int i = 0; i < MAX_HIGHSCORES; i++) {
         if (!temp[i].active) continue;
         printed++;
-        int  mins = (int)(temp[i].timeTaken / 60);
-        int  secs = (int)(temp[i].timeTaken % 60);
-        printf("  | %-4d  %-16s %-7s %-6d %02d:%02d |\n",
-               printed,
-               temp[i].username,
-               diffName(temp[i].difficulty),
-               temp[i].score,
-               mins, secs);
+        int mins = (int)(temp[i].timeTaken / 60);
+        int secs = (int)(temp[i].timeTaken % 60);
+        snprintf(line, sizeof(line), "%-4d %-14.14s %-6.6s %-6d %02d:%02d",
+                 printed, temp[i].username, diffName(temp[i].difficulty),
+                 temp[i].score, mins, secs);
+        printBoxLine(line, boxWidth);
     }
     if (printed == 0)
-        printf("  |          No scores recorded yet.          |\n");
+        printBoxLineCentered("No scores recorded yet.", boxWidth);
 
-    printf("  +-------------------------------------------------+\n");
+    printBoxBorder(boxWidth);
     pressEnter();
 }
 
@@ -1203,16 +1262,21 @@ void updateStatistics(int won, int diff, int score, long timeTaken, int hints) {
 }
 
 void showStatistics(void) {
+    const int boxWidth = 36;
+    char line[64];
+
     printBannerASCII();
     int idx = findStatUser(g_currentUser);
-    printf("  +--------------------------------------+\n");
-    printf("  |       PROFILE STATISTICS             |\n");
-    printf("  |  Player: %-26s|\n", g_currentUser);
-    printf("  +--------------------------------------+\n");
+
+    printBoxBorder(boxWidth);
+    printBoxLineCentered("PROFILE STATISTICS", boxWidth);
+    snprintf(line, sizeof(line), "Player: %s", g_currentUser);
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
 
     if (idx < 0 || !g_stats[idx].active) {
-        printf("  |  No statistics available yet.        |\n");
-        printf("  +--------------------------------------+\n");
+        printBoxLineCentered("No statistics available yet.", boxWidth);
+        printBoxBorder(boxWidth);
         pressEnter(); return;
     }
 
@@ -1223,21 +1287,32 @@ void showStatistics(void) {
     long bt_mins = s->bestTime / 60;
     long bt_secs = s->bestTime % 60;
 
-    printf("  |  Games Played     : %-16d|\n", s->gamesPlayed);
-    printf("  |  Games Won        : %-16d|\n", s->gamesWon);
-    printf("  |  Win Rate         : %-15d%%|\n", winRate);
-    printf("  +--------------------------------------+\n");
-    printf("  |  Easy Completed   : %-16d|\n", s->easyCompleted);
-    printf("  |  Medium Completed : %-16d|\n", s->mediumCompleted);
-    printf("  |  Hard Completed   : %-16d|\n", s->hardCompleted);
-    printf("  +--------------------------------------+\n");
-    printf("  |  Best Score       : %-16d|\n", s->bestScore);
+    snprintf(line, sizeof(line), "%-18s: %d", "Games Played", s->gamesPlayed);
+    printBoxLine(line, boxWidth);
+    snprintf(line, sizeof(line), "%-18s: %d", "Games Won", s->gamesWon);
+    printBoxLine(line, boxWidth);
+    snprintf(line, sizeof(line), "%-18s: %d%%", "Win Rate", winRate);
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
+
+    snprintf(line, sizeof(line), "%-18s: %d", "Easy Completed", s->easyCompleted);
+    printBoxLine(line, boxWidth);
+    snprintf(line, sizeof(line), "%-18s: %d", "Medium Completed", s->mediumCompleted);
+    printBoxLine(line, boxWidth);
+    snprintf(line, sizeof(line), "%-18s: %d", "Hard Completed", s->hardCompleted);
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
+
+    snprintf(line, sizeof(line), "%-18s: %d", "Best Score", s->bestScore);
+    printBoxLine(line, boxWidth);
     if (s->bestTime > 0)
-        printf("  |  Best Time        : %02ld:%02ld           |\n", bt_mins, bt_secs);
+        snprintf(line, sizeof(line), "%-18s: %02ld:%02ld", "Best Time", bt_mins, bt_secs);
     else
-        printf("  |  Best Time        : N/A              |\n");
-    printf("  |  Total Hints Used : %-16d|\n", s->totalHints);
-    printf("  +--------------------------------------+\n");
+        snprintf(line, sizeof(line), "%-18s: N/A", "Best Time");
+    printBoxLine(line, boxWidth);
+    snprintf(line, sizeof(line), "%-18s: %d", "Total Hints Used", s->totalHints);
+    printBoxLine(line, boxWidth);
+    printBoxBorder(boxWidth);
     pressEnter();
 }
 
@@ -1245,55 +1320,32 @@ void showStatistics(void) {
  *                       TUTORIAL
  * ============================================================ */
 
+#define TUTORIAL_FILE    "tutorial.txt"
+#define TUTORIAL_LINE_LEN 256
+
 void showTutorial(void) {
+    FILE *fp = fopen(TUTORIAL_FILE, "r");
+
     clearScreen();
     printSeparator(50);
     printCentered("SUDOKU MASTER PRO -- TUTORIAL", 50);
     printSeparator(50);
-
     printf("\n");
-    printf("  WHAT IS SUDOKU?\n");
-    printf("  ---------------\n");
-    printf("  Sudoku is a logic-based number puzzle played on a\n");
-    printf("  9x9 grid divided into nine 3x3 boxes.\n\n");
 
-    printf("  THE RULES\n");
-    printf("  ---------\n");
-    printf("  1. Fill every empty cell with a number from 1 to 9.\n");
-    printf("  2. Each ROW must contain numbers 1-9 without repeats.\n");
-    printf("  3. Each COLUMN must contain numbers 1-9 without repeats.\n");
-    printf("  4. Each 3x3 BOX must contain numbers 1-9 without repeats.\n\n");
+    if (fp == NULL) {
+        printf("  Tutorial file \"%s\" was not found.\n", TUTORIAL_FILE);
+        printf("  Please make sure it is in the same folder as\n");
+        printf("  the program and try again.\n\n");
+        pressEnter();
+        return;
+    }
 
-    printf("  CONTROLS\n");
-    printf("  --------\n");
-    printf("  During a game, use the in-game menu:\n");
-    printf("  1 -> Enter a number (enter row, column, then digit)\n");
-    printf("  2 -> Use a hint (reveals one correct cell)\n");
-    printf("  3 -> Save the current game to a slot\n");
-    printf("  4 -> Quit to main menu\n\n");
+    char line[TUTORIAL_LINE_LEN];
+    while (fgets(line, sizeof(line), fp) != NULL)
+        printf("%s", line);
 
-    printf("  DIFFICULTY & HINTS\n");
-    printf("  ------------------\n");
-    printf("  Easy   -> More given numbers | 5 hints available\n");
-    printf("  Medium -> Moderate clues     | 3 hints available\n");
-    printf("  Hard   -> Fewer given numbers| 1 hint available\n\n");
-
-    printf("  SCORING SYSTEM\n");
-    printf("  --------------\n");
-    printf("  Base score      : %d points\n",  BASE_SCORE);
-    printf("  Wrong move      : -%d points\n", WRONG_PENALTY);
-    printf("  Hint used       : -%d points\n", HINT_PENALTY);
-    printf("  Time penalty    : -1 per %d seconds elapsed\n", TIME_PENALTY_DIV);
-    printf("  Completion bonus: +%d points\n", COMPLETE_BONUS);
-    printf("  No-hint bonus   : +%d points\n", NO_HINT_BONUS);
-    printf("\n  Tip: Solve quickly and without hints for the best score!\n\n");
-
-    printf("  BOARD LEGEND\n");
-    printf("  ------------\n");
-    printf("   n   = original (locked) cell -- cannot be changed\n");
-    printf("  (n)  = number YOU entered\n");
-    printf("   .   = empty cell to fill\n\n");
-
+    fclose(fp);
+    printf("\n");
     pressEnter();
 }
 
@@ -1314,14 +1366,25 @@ int main(void) {
 
         /* After logout, offer to re-login */
         if (!g_loggedIn) {
-            printf("\n  Return to login screen? (y/n): ");
-            char c;
-            scanf(" %c", &c);
-            if (c == 'y' || c == 'Y') {
-                authMenu();
-            } else {
-                printf("\n  Thank you for playing Sudoku Master Pro!\n\n");
-                break;
+            int answered = 0;
+            while (!answered) {
+                printf("\n  Return to login screen? (y/n): ");
+                char c;
+                if (scanf(" %c", &c) != 1) c = 'n'; /* EOF/read error -> treat as no */
+
+                /* Discard any leftover characters on the input line */
+                int ch;
+                while ((ch = getchar()) != '\n' && ch != EOF) { }
+
+                if (c == 'y' || c == 'Y') {
+                    authMenu();
+                    answered = 1;
+                } else if (c == 'n' || c == 'N') {
+                    printf("\n  Thank you for playing Sudoku Master Pro!\n\n");
+                    answered = 1;
+                } else {
+                    printf("\n  [!] Invalid input. Please enter 'y' or 'n'.\n");
+                }
             }
         }
     }

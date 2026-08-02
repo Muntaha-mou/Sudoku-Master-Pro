@@ -1,0 +1,93 @@
+  WELCOME
+  -------
+  Welcome to Sudoku Master Pro! This tutorial will walk you through
+  everything you need to know to start solving puzzles, from the
+  basic rules to how hints and scoring work in this game.
+
+  WHAT IS SUDOKU?
+  ---------------
+  Sudoku is a logic-based number placement puzzle played on a 9x9
+  grid. The grid is divided into nine 3x3 boxes. Some cells already
+  contain numbers (the "givens"), and your job is to fill in the
+  rest using pure logic - no guessing required.
+
+  OBJECTIVE
+  ---------
+  Fill every empty cell on the board with a digit from 1 to 9 so
+  that the completed grid follows all of the Sudoku rules below.
+  The puzzle is finished the moment every cell contains a number
+  that doesn't break any rule.
+
+  BASIC RULES
+  -----------
+  1. Every ROW must contain the numbers 1-9 with no repeats.
+  2. Every COLUMN must contain the numbers 1-9 with no repeats.
+  3. Every 3x3 BOX must contain the numbers 1-9 with no repeats.
+  4. Numbers that were already on the board when the puzzle
+     started (the "givens") are locked and cannot be changed.
+
+  CONTROLS
+  --------
+  Once a game is in progress, use the in-game menu to play:
+    1. Enter a number   - pick a row, a column, then a digit (1-9)
+                           to place in that cell.
+    2. Use a hint        - reveals the correct number for one
+                           empty cell on the board.
+    3. Save game         - see note below.
+    4. Quit to main menu - leave the current puzzle and return.
+
+  Locked (given) cells cannot be edited - if you try, the game
+  will let you know and ask you to pick a different cell.
+
+  DIFFICULTY LEVELS
+  ------------------
+  Easy   - More starting numbers are given, so fewer cells need
+           to be solved. Comes with the most hints (5).
+  Medium - A balanced number of starting clues. A moderate
+           challenge with 3 hints available.
+  Hard   - Very few starting numbers. The biggest logical
+           challenge, with only 1 hint available.
+
+  RIGHT / WRONG MOVE INDICATOR
+  -----------------------------
+  Every number you enter is checked immediately against Sudoku's
+  row, column, and 3x3 box rules:
+    - If the move is VALID, it's placed on the board right away.
+    - If the move is INVALID, the game rejects it, tells you why,
+      counts it as a wrong move, and applies a small score
+      penalty. The board itself is never left in a broken state -
+      only legal moves are ever placed.
+  Keep an eye on your "Wrongs" counter at the top of the board;
+  it tracks how many invalid attempts you've made this game.
+
+  HINT SYSTEM
+  -----------
+  Stuck on a cell? Choose "Use a hint" from the in-game menu and
+  the game will reveal the correct number for one random empty
+  cell - nothing else happens. Each difficulty level starts you
+  with a limited number of hints (5 for Easy, 3 for Medium, 1 for
+  Hard). Once you're out of hints, you'll need to solve the rest
+  of the puzzle on your own.
+
+  TIPS FOR BEGINNERS
+  -------------------
+  - Start with rows, columns, or boxes that already have the most
+    numbers filled in - they're the easiest to complete.
+  - Scan for cells where only one number could possibly fit,
+    based on what's already in that row, column, and box.
+  - Use hints whenever you're stuck - they simply reveal one
+    correct cell so you can keep making progress.
+  - Wrong moves cost points too, so it often pays to double-check
+    a cell before entering a number if you're unsure.
+  - If you get stuck, step back and look at the whole board rather
+    than focusing on a single cell.
+
+  WINNING THE GAME
+  -----------------
+  The puzzle is complete as soon as every cell on the board is
+  filled in. When that happens, the game automatically detects
+  the completion, shows your final time, hints used, and score,
+  and the round ends there. There's no separate "submit" step -
+  just fill in the last cell and you're done!
+
+  Good luck, and have fun solving!
